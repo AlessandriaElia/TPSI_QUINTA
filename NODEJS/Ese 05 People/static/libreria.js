@@ -18,7 +18,19 @@ async function inviaRichiesta(method, url="", params={}) {
 		//"signal": AbortSignal.timeout(500) 
     }
 		
-  	if(method=="GET") url += "?" + new URLSearchParams(params)
+  	if(method=="GET") {
+		const queryParams = new URLSearchParams();
+		for(const key in params){
+			let value = params[key];
+			if(typeof value === 'object' && value != null){
+				queryParams.append(key, JSON.stringify(value));
+
+			}
+			else{
+				queryParams.append(key, value);
+			}
+		}
+		url += "?" + new URLSearchParams(params)}
 	else {
 		if(params instanceof FormData){
 			options.headers["Content-Type"]="multipart/form-data;" 
