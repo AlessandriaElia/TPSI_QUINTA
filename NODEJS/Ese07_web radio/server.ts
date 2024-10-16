@@ -48,4 +48,17 @@ app.addListener('PATCH', '/api/addLike', function(req:any, res:any){
         return radio.id == id;
     })
     radio.votes = (parseInt(radio.votes)+1).toString();
+
+    fs.writeFile('./radios.json', JSON.stringify(radios), function(err){
+        if(err){
+            res.writeHead(500, headers.text);
+            res.write('Errore aggiornamento database');
+            res.end();
+        }
+        else{
+            res.writeHead(200, headers.json);
+            res.write(JSON.stringify({res:'Ok'}));
+            res.end();
+        }
+    })
 })

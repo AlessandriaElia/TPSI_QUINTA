@@ -21,6 +21,7 @@ window.onload = function(){
     async function getRadios(){
         const radios = await inviaRichiesta('GET', '/api/getRadios', {state:this.value});
         if(radios){
+            tbody.empty();
             console.log(radios);
             radios.forEach((radio)=>{
                 const tr = $('<tr>').appendTo(tbody);
@@ -42,6 +43,7 @@ window.onload = function(){
         const response = await inviaRichiesta('PATCH', '/api/addLike', {id});
         if(response){
             console.log(response);
+            lstRegioni.trigger('change');
         }
     }
 }
