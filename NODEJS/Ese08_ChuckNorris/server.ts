@@ -30,3 +30,54 @@ app.addListener('GET', '/api/categories', function(req:any, res:any){
     res.end();
     
 })
+app.addListener('GET', '/api/facts', function(req:any,res:any){
+    const category = req["GET"].category;
+    const filteredFacts = facts.facts
+    .filter(fact => fact.categories.includes(category)) 
+    .sort((a, b) => b.score - a.score);  
+    res.writeHead(200, headers.json);
+    res.write(JSON.stringify(filteredFacts));
+    res.end();
+    console.log(filteredFacts);
+})
+app.addListener('POST', '/api/rate', function(req:any, res:any){
+    const selectedIds = req["BODY"].ids;
+    facts.facts.forEach(fact => {
+        if (selectedIds.includes(fact.id)) {
+            fact.score += 1;  
+        }
+    });
+
+    res.writeHead(200, headers.json);
+    res.write(JSON.stringify({ message: "OK", facts }));
+    res.end();
+
+})
+app.addListener('POST', '/api/add', function(req:any, res:any){
+    const { categoria, value } = req["BODY"];
+
+    const newFactId = generateUniqueId();
+    const newFact = {
+        id: newFactId,
+        value: value,
+        categories: [categoria], 
+        created_at: new Date().toISOString(), 
+        updated_at: new Date().toISOString(),
+        url: api_url, // URL fisso
+        icon_url: icon_url, // Icona fissa
+        score: 0 // Punteggio iniziale
+    };
+
+    facts.facts.push(newFact);
+    res.writeHead(200, headers.json);
+    res.write(JSON.stringify({ status: 'OK' }));
+    res.end();
+
+})
+function generateUniqueId(): string {
+    let id: string;
+    do {
+        id = Array.from({ length: 22 }, () => base64Chars[Math.floor(Math.random() * base64Chars.length)]).join('');
+    } while (facts.facts.some(fact => fact.id === id));
+    return id;
+}
